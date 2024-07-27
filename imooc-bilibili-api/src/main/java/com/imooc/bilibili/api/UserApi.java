@@ -39,6 +39,7 @@ public class UserApi {
         userService.addUser(user);
         return JsonResponse.success();
     }
+
 //    登录接口
     @PostMapping("/user-tokens")
     public JsonResponse<String> login (@RequestBody User user) throws Exception{
@@ -61,6 +62,7 @@ public class UserApi {
     }
 
 
+    //修改用户个人信息
     @PutMapping("/user-infos")
     public JsonResponse<String> updateUserInfos(@RequestBody UserInfo userInfo){
 //        从token获取到userId

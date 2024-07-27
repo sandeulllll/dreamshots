@@ -21,7 +21,7 @@ public class TokenUtil {
 //        获取当前时间
         calendar.setTime(new Date());
 //        设置过期时间为30s
-        calendar.add(Calendar.SECOND,30);
+        calendar.add(Calendar.SECOND,3*60*60);
 //        生成JWT token
 //        传入参数：唯一标识（此处使用userId作为唯一标识），签发者，过期时间，使用的加密算法类型
         return JWT.create().withKeyId(String.valueOf(userId))

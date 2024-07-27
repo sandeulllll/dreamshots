@@ -9,7 +9,7 @@
             userId = #{userId} and followingId = #{followingId}
     </select>
     
-    <insert id="addUserFollowinng" parameterType="com.imooc.bilibili.domain.UserFollowing">
+    <insert id="addUserFollowing" parameterType="com.imooc.bilibili.domain.UserFollowing">
         insert into
             t_user_following(
                 userId,
@@ -31,5 +31,14 @@
              t_user_following
         where
               userId = #{userId}
+    </select>
+    
+    <select id="getUserFans" parameterType="java.lang.Long" resultType="com.imooc.bilibili.domain.UserFollowing">
+        select
+            *
+        from
+            t_user_following
+        where
+            followingId = #{followingId}
     </select>
 </mapper>

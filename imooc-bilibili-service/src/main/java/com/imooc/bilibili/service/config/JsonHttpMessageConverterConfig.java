@@ -40,6 +40,6 @@ public class JsonHttpMessageConverterConfig {
                 SerializerFeature.DisableCircularReferenceDetect
         );
         fastConverter.setFastJsonConfig(fastJsonConfig);
-        return new HttpMessageConverters();
+        return new HttpMessageConverters(fastConverter);
     }
  }

@@ -20,12 +20,12 @@
               id = #{id}
     </select>
 
-    <select id="getBytUserId" parameterType="Long" resultType="com.imooc.bilibili.domain.FollowingGroup">
+    <select id="getByUserId" parameterType="Long" resultType="com.imooc.bilibili.domain.FollowingGroup">
         select
                *
         from
              t_following_group
         where
-            userId = #{userId}l or `type` in ('0','1','2')
+            userId = #{userId} or `type` in ('0','1','2')
     </select>
 </mapper>
