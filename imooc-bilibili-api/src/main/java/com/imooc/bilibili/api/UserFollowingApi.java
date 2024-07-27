@@ -43,4 +43,20 @@ public class UserFollowingApi {
         return new JsonResponse<>(result);
     }
 
+//    新增用户分组
+    @PostMapping("/user-following-groups")
+    public JsonResponse<Long> addUserFollowingGroups(@RequestBody FollowingGroup followingGroup){
+        Long userId = userSupport.getCurrentUserId();
+        followingGroup.setUserId(userId);
+        Long groupId = userFollowingService.addUserFollowingGroups(followingGroup);
+        return new JsonResponse<>(groupId);
+    }
+
+//    获取用户关注分组
+    @GetMapping("/user-following-groups")
+    public JsonResponse<List<FollowingGroup>> getUserFollowingGroups(){
+        Long userId = userSupport.getCurrentUserId();
+        List<FollowingGroup> list = userFollowingService.getUserFollowingGroups(userId);
+        return new JsonResponse<>(list);
+    }
 }

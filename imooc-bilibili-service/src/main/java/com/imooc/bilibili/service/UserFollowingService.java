@@ -1,15 +1,13 @@
 package com.imooc.bilibili.service;
 
 import com.imooc.bilibili.dao.UserFollowingDao;
-import com.imooc.bilibili.domain.FollowingGroup;
-import com.imooc.bilibili.domain.User;
-import com.imooc.bilibili.domain.UserFollowing;
-import com.imooc.bilibili.domain.UserInfo;
+import com.imooc.bilibili.domain.*;
 import com.imooc.bilibili.domain.constant.UserConstant;
 import com.imooc.bilibili.domain.exception.ConditionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -25,6 +23,7 @@ public class UserFollowingService {
     private FollowingGroupService followingGroupService;
     @Autowired
     private UserService userService;
+
 
     /**
      * 添加用户关注
@@ -137,5 +136,30 @@ public class UserFollowingService {
             }
         }
         return fanList;
+    }
+
+    //新增用户分组
+    public Long addUserFollowingGroups(FollowingGroup followingGroup) {
+        followingGroup.setCreateTime(new Date());
+        followingGroup.setType(UserConstant.USER_FOLLOWING_GROUP_TYPE_USER);
+        followingGroupService.addFollowingGroup(followingGroup);
+        return followingGroup.getId();
+    }
+
+    public List<FollowingGroup> getUserFollowingGroups(Long userId) {
+        return followingGroupService.getUserFollowingGroups(userId);
+    }
+
+    public List<UserInfo> checkFollowingStatus(List<UserInfo> userInfoList, Long userId) {
+        List<UserFollowing> userFollowingList = userFollowingDao.getUserFollowings(userId);
+        for(UserInfo userInfo : userInfoList){
+            userInfo.setFollowed(false);
+            for(UserFollowing userFollowing : userFollowingList){
+                if(userFollowing.getFollowingId().equals(userInfo.getUserId())){
+                    userInfo.setFollowed(true);
+                }
+            }
+        }
+        return userInfoList;
     }
 }
