@@ -1,6 +1,6 @@
 package com.imooc.bilibili.domain.constant;
 
-public class UserConstant {
+public interface UserConstant {
     public static final String GENDER_MALE = "0";
     public static final String GENDER_FEMALE = "1";
     public static final String GENDER_UNKOWN = "0";
