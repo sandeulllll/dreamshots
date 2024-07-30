@@ -20,8 +20,8 @@ public class TokenUtil {
         Calendar calendar = Calendar.getInstance();
 //        获取当前时间
         calendar.setTime(new Date());
-//        设置过期时间为30s
-        calendar.add(Calendar.SECOND,3*60*60);
+//        设置过期时间为1小时
+        calendar.add(Calendar.HOUR,1);
 //        生成JWT token
 //        传入参数：唯一标识（此处使用userId作为唯一标识），签发者，过期时间，使用的加密算法类型
         return JWT.create().withKeyId(String.valueOf(userId))
@@ -49,4 +49,15 @@ public class TokenUtil {
             throw new ConditionException("非法用户token！");
         }
         }
+
+    public static String generateRefreshToken(Long userId)throws Exception{
+        Algorithm algorithm = Algorithm.RSA256(RSAUtil.getPublicKey(),RSAUtil.getPrivateKey());
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        calendar.add(Calendar.DAY_OF_MONTH,7);
+        return JWT.create().withKeyId(String.valueOf(userId))
+                .withIssuer(ISSUER)
+                .withExpiresAt(calendar.getTime())
+                .sign(algorithm);
+    }
 }

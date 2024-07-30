@@ -45,7 +45,7 @@ public class DataLimitedAspect {
             if(arg instanceof UserMoment){
                 UserMoment userMoment = (UserMoment)arg;
                 String type = userMoment.getType();
-                if(roleCodeSet.contains(AuthRoleConstant.ROLE_LV0) && !"0".equals(type)){
+                if(roleCodeSet.contains(AuthRoleConstant.ROLE_LV1) && !"0".equals(type)){
                     throw new ConditionException("参数异常！");
                 }
             }
