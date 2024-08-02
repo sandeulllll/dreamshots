@@ -129,7 +129,7 @@ public class FastDFSUtil {
             randomAccessFile.seek(i);
             byte[] bytes = new byte[SLICE_SIZE];
             int len = randomAccessFile.read(bytes);
-            String path = "/Users/hat/tmpfile/" + count + "." + fileType;
+            String path = "D:\\Users\\tmpfile\\" + count + "." + fileType;
             File slice = new File(path);
             FileOutputStream fos = new FileOutputStream(slice);
             fos.write(bytes, 0, len);
