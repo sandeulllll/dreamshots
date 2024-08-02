@@ -4,6 +4,7 @@ import com.imooc.bilibili.api.support.UserSupport;
 import com.imooc.bilibili.domain.JsonResponse;
 import com.imooc.bilibili.domain.PageResult;
 import com.imooc.bilibili.domain.Video;
+import com.imooc.bilibili.domain.VideoCollection;
 import com.imooc.bilibili.service.VideoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -70,6 +71,33 @@ public class VideoApi {
             userId = userSupport.getCurrentUserId();
         }catch (Exception ignored){}
         Map<String,Object> result = videoService.getVideoLikes(videoId,userId);
+        return new JsonResponse<>(result);
+    }
+
+//    收藏视频
+    @PostMapping("/video-collections")
+    public JsonResponse<String> addVideoCollection(@RequestBody VideoCollection videoCollection){
+        Long userId = userSupport.getCurrentUserId();
+        videoService.addVideoCollection(videoCollection,userId);
+        return JsonResponse.success();
+    }
+
+//    取消收藏视频
+    @DeleteMapping("/video-collections")
+    public JsonResponse<String> deleteVideoCollections(@RequestParam Long videoId){
+        Long userId = userSupport.getCurrentUserId();
+        videoService.deleteVideoCollection(videoId,userId);
+        return JsonResponse.success();
+    }
+
+//    获取当前视频收藏数量
+    @GetMapping("/video-collections")
+    public JsonResponse<Map<String,Object>> getVideoCollections(@RequestParam Long videoId){
+        Long userId = null;
+        try {
+            userId = userSupport.getCurrentUserId();
+        }catch (Exception ignored){}
+        Map<String,Object> result = videoService.getVideoCollections(videoId,userId);
         return new JsonResponse<>(result);
     }
 

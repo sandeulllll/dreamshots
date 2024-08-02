@@ -1,6 +1,7 @@
 package com.imooc.bilibili.dao;
 
 import com.imooc.bilibili.domain.Video;
+import com.imooc.bilibili.domain.VideoCollection;
 import com.imooc.bilibili.domain.VideoLike;
 import com.imooc.bilibili.domain.VideoTag;
 import org.apache.ibatis.annotations.Mapper;
@@ -29,4 +30,14 @@ public interface VideoDao {
     void deleteVideoLike(@Param("videoId") Long videoId, @Param("userId") Long userId);
 
     Long getVideoLikes(Long videoId);
+
+    void deleteVideoCollection(@Param("videoId") Long videoId,
+                               @Param("userId") Long userId);
+
+    void addVideoCollection(VideoCollection videoCollection);
+
+    Long getVideoCollections(Long videoId);
+
+    VideoCollection getVideoCollectionByVideoIdAndUserId(@Param("videoId") Long videoId,
+                                                         @Param("userId") Long userId);
 }
