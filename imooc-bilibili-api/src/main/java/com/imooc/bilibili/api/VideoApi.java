@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 @RestController
 public class VideoApi {
     @Autowired
@@ -35,5 +38,13 @@ public class VideoApi {
                                                           String area){
         PageResult<Video> result = videoService.pageListVideos(size,no,area);
         return new JsonResponse<>(result);
+    }
+
+//    在线播放视频
+    @GetMapping("/video-slices")
+    public void viewVideoOnlineBySlices(HttpServletRequest request,
+                                        HttpServletResponse response,
+                                        String url) throws Exception {
+        videoService.viewVideoOnlineBySlices(request,response,url);
     }
 }
