@@ -10,12 +10,13 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Service
 public class DanmuService {
+
+    private static final String DANMU_KEY = "dm-video-";
 
     @Autowired
     private DanmuDao danmuDao;
@@ -45,5 +46,37 @@ public class DanmuService {
         }
         list.add(danmu);
         redisTemplate.opsForValue().set(key, JSONObject.toJSONString(list));
+    }
+
+    public List<Danmu> getDanmus(Long videoId,
+                                 String startTime, String endTime) throws Exception{
+        String key = DANMU_KEY + videoId;
+        String value = redisTemplate.opsForValue().get(key);
+        List<Danmu> list;
+        if(!StringUtil.isNullOrEmpty(value)){
+            list = JSONArray.parseArray(value,Danmu.class);
+            if(!StringUtil.isNullOrEmpty(startTime)
+                && !StringUtil.isNullOrEmpty(endTime)){
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                Date startDate = sdf.parse(startTime);
+                Date endDate = sdf.parse(endTime);
+                List<Danmu> childList = new ArrayList<>();
+                for(Danmu danmu : list){
+                    Date createTime = danmu.getCreateTime();
+                    if(createTime.after(startDate) && createTime.before(endDate)){
+                        childList.add(danmu);
+                    }
+                }
+                list = childList;
+            }
+        }else {
+            Map<String,Object> params = new HashMap<>();
+            params.put("videoId",videoId);
+            params.put("startTime",startTime);
+            params.put("endTime",endTime);
+            list = danmuDao.getDanmus(params);
+            redisTemplate.opsForValue().set(key,JSONObject.toJSONString(list));
+        }
+        return list;
     }
 }
