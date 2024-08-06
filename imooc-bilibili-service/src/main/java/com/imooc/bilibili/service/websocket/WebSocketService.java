@@ -2,9 +2,13 @@ package com.imooc.bilibili.service.websocket;
 
 import com.alibaba.fastjson.JSONObject;
 import com.imooc.bilibili.domain.Danmu;
+import com.imooc.bilibili.domain.constant.UserMomentsConstant;
 import com.imooc.bilibili.service.DanmuService;
+import com.imooc.bilibili.service.util.RocketMQUtil;
 import com.imooc.bilibili.service.util.TokenUtil;
 import io.netty.util.internal.StringUtil;
+import org.apache.rocketmq.client.producer.DefaultMQProducer;
+import org.apache.rocketmq.common.message.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -15,6 +19,7 @@ import javax.websocket.*;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -28,7 +33,7 @@ public class WebSocketService {
 
     private static final AtomicInteger ONLINE_COUNT = new AtomicInteger(0);
 
-    private static final ConcurrentHashMap<String,WebSocketService> WEBSOCKET_MAP = new ConcurrentHashMap<>();
+    public static final ConcurrentHashMap<String,WebSocketService> WEBSOCKET_MAP = new ConcurrentHashMap<>();
 
     private Session session;
 
@@ -81,9 +86,12 @@ public class WebSocketService {
                 //群发消息
                 for(Map.Entry<String,WebSocketService> entry : WEBSOCKET_MAP.entrySet()){
                     WebSocketService webSocketService = entry.getValue();
-                    if(webSocketService.session.isOpen()){
-                        webSocketService.sendMessage(message);
-                    }
+                    DefaultMQProducer danmusProducer = (DefaultMQProducer) APPLICATION_CONTEXT.getBean("danmusProducer");
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("message",message);
+                    jsonObject.put("sessionId",webSocketService.getSessionId());
+                    Message msg = new Message(UserMomentsConstant.TOPIC_MOMENTS,jsonObject.toJSONString().getBytes(StandardCharsets.UTF_8));
+                    RocketMQUtil.asyncSendMsg(danmusProducer,msg);
                 }
                 if(userId != null){
 //                    保存弹幕到数据库
@@ -91,7 +99,7 @@ public class WebSocketService {
                     danmu.setUserId(userId);
                     danmu.setCreateTime(new Date());
                     DanmuService danmuService = (DanmuService) APPLICATION_CONTEXT.getBean("danmuService");
-                    danmuService.addDanmu(danmu);
+                    danmuService.asyncAddDanmu(danmu);
 //                    保存弹幕到redis
                     danmuService.addDanmusToRedis(danmu);
                 }
@@ -110,4 +118,11 @@ public class WebSocketService {
         this.session.getBasicRemote().sendText(message);
     }
 
+    public Session getSession() {
+        return session;
+    }
+
+    public String getSessionId() {
+        return sessionId;
+    }
 }

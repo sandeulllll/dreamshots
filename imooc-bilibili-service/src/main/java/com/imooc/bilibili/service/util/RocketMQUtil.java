@@ -25,7 +25,7 @@ public class RocketMQUtil {
                 @Override
                 public void onSuccess(SendResult sendResult) {
                     countDownLatch.countDown();
-                    System.out.println(sendResult.getMsgId());
+                    System.out.println("成功发送"+sendResult.getMsgId());
                 }
 
                 @Override
