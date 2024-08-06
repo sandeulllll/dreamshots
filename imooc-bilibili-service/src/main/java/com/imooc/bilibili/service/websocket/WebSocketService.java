@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.websocket.*;
@@ -124,5 +125,18 @@ public class WebSocketService {
 
     public String getSessionId() {
         return sessionId;
+    }
+
+    @Scheduled(fixedRate = 5000)
+    private void noticeOnlineCount() throws Exception{
+        for(Map.Entry<String,WebSocketService> entry : WebSocketService.WEBSOCKET_MAP.entrySet()){
+            WebSocketService webSocketService = entry.getValue();
+            if(webSocketService.session.isOpen()){
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("onlineCount",ONLINE_COUNT.get());
+                jsonObject.put("msg","当前在线人数为" + ONLINE_COUNT.get());
+                webSocketService.sendMessage(jsonObject.toJSONString());
+            }
+        }
     }
 }
