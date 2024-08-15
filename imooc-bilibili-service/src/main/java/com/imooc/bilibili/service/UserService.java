@@ -26,6 +26,9 @@ public class UserService {
     @Autowired
     private UserAuthService userAuthService;
 
+    @Autowired
+    private ElasticSearchService elasticSearchService;
+
     public void addUser(User user) {
         String phone = user.getPhone();
         if(StringUtils.isNullOrEmpty(phone)){
@@ -57,6 +60,7 @@ public class UserService {
         userInfo.setGender(UserConstant.GENDER_FEMALE);
         userInfo.setCreateTime(now);
         userDao.addUserInfo(userInfo);
+        elasticSearchService.addUserInfo(userInfo);
         //添加用户默认权限角色
         userAuthService.addUserDefaultRole(user.getId());
     }

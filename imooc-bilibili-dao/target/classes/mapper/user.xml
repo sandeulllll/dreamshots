@@ -29,7 +29,7 @@
             )
     </insert>
 
-    <insert id="addUserInfo" parameterType="com.imooc.bilibili.domain.UserInfo">
+    <insert id="addUserInfo" parameterType="com.imooc.bilibili.domain.UserInfo" useGeneratedKeys="true" keyProperty="id">
         insert into
             t_user_info(
                 userId,
