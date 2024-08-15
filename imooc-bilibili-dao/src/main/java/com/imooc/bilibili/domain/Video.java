@@ -1,18 +1,27 @@
 package com.imooc.bilibili.domain;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.elasticsearch.annotations.Document;
+import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldType;
+
 import java.util.Date;
 import java.util.List;
 
+@Document(indexName = "videos")
 public class Video {
 
+    @Id
     private Long id;
 
+    @Field(type = FieldType.Long)
     private Long userId;
 
     private String url;
 
     private String thumbnail;
 
+    @Field(type = FieldType.Text)
     private String title;
 
     private String type;
@@ -23,10 +32,13 @@ public class Video {
 
     private List<VideoTag> videoTagList;
 
+    @Field(type = FieldType.Text)
     private String description;
 
+    @Field(type = FieldType.Date)
     private Date createTime;
 
+    @Field(type = FieldType.Date)
     private Date updateTime;
 
     public List<VideoTag> getVideoTagList() {
