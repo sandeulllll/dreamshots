@@ -62,4 +62,11 @@ public interface VideoDao {
     void addVideoView(VideoView videoView);
 
     Integer getVideoViewCounts(Long videoId);
+
+    List<UserPreference> getAllUserPreference();
+
+    List<Video> batchGetVideosByIds(List<Long> idList);
+
+//    void batchAddVideoBinaryPictures(List<VideoBinaryPicture> pictures);
+    Integer batchAddVideoBinaryPictures(@Param("pictureList") List<VideoBinaryPicture> pictureList);
 }
