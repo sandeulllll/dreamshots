@@ -150,6 +150,7 @@ public class VideoApi {
     /**
      * 添加视频观看记录
      */
+    @PostMapping("/video-views")
     public JsonResponse<String> addVideoView(@RequestBody VideoView videoView,
                                              HttpServletRequest request){
         Long userId;
@@ -170,6 +171,7 @@ public class VideoApi {
     public JsonResponse<Integer> getVideoViewCounts(@RequestParam Long videoId){
         Integer count = videoService.getVideoViewCounts(videoId);
         return new JsonResponse<>(count);
+
     }
 
 
