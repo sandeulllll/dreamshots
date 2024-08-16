@@ -8,4 +8,8 @@ public interface UserMomentsConstant {
     public static final String GROUP_DANMUS = "DanmusGroup";
 
     public static final String TOPIC_DANMUS = "Topic-DANMUS";
+
+    public static final String TYPE_VIDEO = "0";
+
+    public static final String TYPE_IMG = "1";
 }

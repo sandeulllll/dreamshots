@@ -41,6 +41,28 @@ public class Video {
     @Field(type = FieldType.Date)
     private Date updateTime;
 
+    @Field(type = FieldType.Integer)
+    private Integer viewCount;
+
+    @Field(type = FieldType.Integer)
+    private Integer danmuCount;
+
+    public Integer getViewCount() {
+        return viewCount;
+    }
+
+    public void setViewCount(Integer viewCount) {
+        this.viewCount = viewCount;
+    }
+
+    public Integer getDanmuCount() {
+        return danmuCount;
+    }
+
+    public void setDanmuCount(Integer danmuCount) {
+        this.danmuCount = danmuCount;
+    }
+
     public List<VideoTag> getVideoTagList() {
         return videoTagList;
     }

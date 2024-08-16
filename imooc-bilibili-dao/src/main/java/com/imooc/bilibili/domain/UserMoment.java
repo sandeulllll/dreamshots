@@ -16,6 +16,26 @@ public class UserMoment {
 
     private Date updateTime;
 
+    private UserInfo userInfo;
+
+    private Content content;
+
+    public Content getContent() {
+        return content;
+    }
+
+    public void setContent(Content content) {
+        this.content = content;
+    }
+
+    public UserInfo getUserInfo() {
+        return userInfo;
+    }
+
+    public void setUserInfo(UserInfo userInfo) {
+        this.userInfo = userInfo;
+    }
+
     public Long getId() {
         return id;
     }

@@ -6,13 +6,14 @@ import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Mapper
 public interface VideoDao {
 
     Integer addVideos(Video video);
 
-    Integer batchAddVideTags(List<VideoTag> videoTagList);
+    Integer batchAddVideoTags(List<VideoTag> videoTagList);
 
     Integer pageCountVideos(Map<String, Object> params);
 
@@ -69,4 +70,8 @@ public interface VideoDao {
 
 //    void batchAddVideoBinaryPictures(List<VideoBinaryPicture> pictures);
     Integer batchAddVideoBinaryPictures(@Param("pictureList") List<VideoBinaryPicture> pictureList);
+
+    List<VideoViewCount> getVideoViewCountByVideoIds(Set<Long> videoIds);
+
+    List<VideoDanmuCount> getVideoDanmuCountByVideoIds(Set<Long> videoIds);
 }

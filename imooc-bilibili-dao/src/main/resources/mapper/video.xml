@@ -29,20 +29,20 @@
             )
     </insert>
 
-    <insert id="batchAddVideTags" parameterType="java.util.List">
+    <insert id="batchAddVideoTags" parameterType="java.util.List">
         insert into
-            t_video_tag(
-                videoId,
-                tagId,
-                createTime
-            )values
-            <foreach collection="videoTagList" item="videoTag" separator=",">
-                (
-                    #{videoTag.videoId},
-                    #{videoTag.tagId},
-                    #{videoTag.createTime}
-                )
-            </foreach>
+        t_video_tag(
+        videoId,
+        tagId,
+        createTime
+        )values
+        <foreach collection="videoTagList" item="videoTag" separator=",">
+            (
+                #{videoTag.videoId},
+                #{videoTag.tagId},
+                #{videoTag.createTime}
+            )
+        </foreach>
     </insert>
 
     <select id="pageCountVideos" parameterType="java.util.Map" resultType="java.lang.Integer">
@@ -347,4 +347,32 @@
             )
         </foreach>
     </insert>
+
+    <select id="getVideoViewCountByVideoIds" resultType="com.imooc.bilibili.domain.VideoViewCount">
+        SELECT
+        videoId,
+        count( id ) count
+        FROM
+        t_video_view
+        WHERE
+        videoId in
+        <foreach collection="videoIds" item="videoId" open="(" close=")" separator=",">
+            #{videoId}
+        </foreach>
+        GROUP BY videoId
+    </select>
+
+    <select id="getVideoDanmuCountByVideoIds" resultType="com.imooc.bilibili.domain.VideoDanmuCount">
+        select
+        videoId,
+        count( id ) count
+        from
+        t_danmu
+        where
+        videoId in
+        <foreach collection="videoIds" item="videoId" open="(" close=")" separator=",">
+            #{videoId}
+        </foreach>
+        GROUP BY videoId
+    </select>
 </mapper>
