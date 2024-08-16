@@ -35,7 +35,6 @@ public class CorsConfig implements Filter {
 
     private final String[] allowedDomain = {"http://localhost:8080","http://localhost:15005", "http://39.107.54.180", "http://localhost:8081"};
 
-
     public void doFilter(ServletRequest request, ServletResponse response,
                          FilterChain chain) throws IOException, ServletException {
         HttpServletResponse httpResponse = (HttpServletResponse) response;
