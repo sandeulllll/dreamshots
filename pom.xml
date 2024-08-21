@@ -15,7 +15,7 @@
         <version>2.5.1</version>
     </parent>
 
-    <profiles>
+    <!--<profiles>
         <profile>
             <id>test</id>
             <properties>
@@ -25,7 +25,7 @@
                 <activeByDefault>false</activeByDefault>
             </activation>
         </profile>
-    </profiles>
+    </profiles>-->
 
 
     <dependencies>
