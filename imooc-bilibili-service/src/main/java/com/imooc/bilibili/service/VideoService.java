@@ -7,6 +7,7 @@ import com.imooc.bilibili.service.util.FastDFSUtil;
 import com.imooc.bilibili.service.util.ImageUtil;
 import com.imooc.bilibili.service.util.IpUtil;
 import eu.bitwalker.useragentutils.UserAgent;
+import org.apache.mahout.cf.taste.common.TasteException;
 import org.apache.mahout.cf.taste.impl.common.FastByIDMap;
 import org.apache.mahout.cf.taste.impl.model.GenericDataModel;
 import org.apache.mahout.cf.taste.impl.model.GenericPreference;
@@ -26,6 +27,7 @@ import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.bytedeco.javacv.Frame;
 import org.bytedeco.javacv.Java2DFrameConverter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -62,6 +64,11 @@ public class VideoService {
     private ImageUtil imageUtil;
 
     private static final int FRAME_NO = 256;
+
+    private static final int DEFAULT_RECOMMEND_NUMBER = 3;
+
+    @Value("${fdfs.http.storage-addr}")
+    private String fastdfsUrl;
 
     @Transactional
     public void addVideos(Video video) {
@@ -416,5 +423,58 @@ public class VideoService {
         return viewCount.stream()
                 .collect(Collectors.toMap(VideoViewCount::getVideoId,
                         VideoViewCount::getCount));
+    }
+
+    /**
+     * 基于内容的协同推荐
+     * @param userId 用户id
+     * @param itemId 参考内容id（根据该内容进行相似内容推荐）
+     * @param howMany 需要推荐的数量
+     */
+    public List<Video> recommendByItem(Long userId, Long itemId, int howMany) throws TasteException {
+        List<UserPreference> list = videoDao.getAllUserPreference();
+        //创建数据模型
+        DataModel dataModel = this.createDataModel(list);
+        //获取内容相似程度
+        ItemSimilarity similarity = new UncenteredCosineSimilarity(dataModel);
+        GenericItemBasedRecommender genericItemBasedRecommender = new GenericItemBasedRecommender(dataModel, similarity);
+        // 物品推荐相拟度，计算两个物品同时出现的次数，次数越多任务的相拟度越高
+        List<Long> itemIds = genericItemBasedRecommender.recommendedBecause(userId, itemId, howMany)
+                .stream()
+                .map(RecommendedItem::getItemID)
+                .collect(Collectors.toList());
+        //推荐视频
+        return videoDao.batchGetVideosByIds(itemIds);
+    }
+
+    public List<Video> getVisitorVideoRecommendations() {
+        return this.pageListVideos(DEFAULT_RECOMMEND_NUMBER,1,null).getList();
+    }
+
+    public List<Video> getVideoRecommendations(String recommendType, Long userId) {
+        List<Video> list = new ArrayList<>();
+        try {
+            //根据推荐类型进行推荐：1基于用户推荐 2基于内容推荐
+            if("1".equals(recommendType)){
+                list = this.recommend(userId);
+            }else{
+                //找到用户最喜欢的视频，作为推荐的基础内容
+                List<UserPreference> preferencesList = videoDao.getAllUserPreference();
+                Optional<Long> itemIdOpt = preferencesList.stream().filter(item -> item.getUserId().equals(userId))
+                        .max(Comparator.comparing(UserPreference :: getValue)).map(UserPreference::getVideoId);
+                if(itemIdOpt.isPresent()){
+                    list = this.recommendByItem(userId, itemIdOpt.get(), DEFAULT_RECOMMEND_NUMBER);
+                }
+            }
+            //若没有计算出推荐内容，则默认查询最新视频
+            if(list.isEmpty()){
+                list = this.pageListVideos(3,1,null).getList();
+            }else{
+                list.forEach(video -> video.setThumbnail(fastdfsUrl+video.getThumbnail()));
+            }
+        }catch (Exception e){
+            throw new ConditionException("推荐失败");
+        }
+        return list;
     }
 }

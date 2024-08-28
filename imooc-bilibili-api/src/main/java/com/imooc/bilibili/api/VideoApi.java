@@ -190,6 +190,25 @@ public class VideoApi {
         List<VideoBinaryPicture> list = videoService.convertVideoToImage(videoId, fileMd5);
         return new JsonResponse<>(list);
     }
+
+    /**
+     * 视频内容推荐(游客版)
+     */
+    @GetMapping("/visitor-video-recommendations")
+    public JsonResponse<List<Video>> getVisitorVideoRecommendations() {
+        List<Video> list = videoService.getVisitorVideoRecommendations();
+        return new JsonResponse<>(list);
+    }
+
+    /**
+     * 视频内容推荐(整合版)
+     */
+    @GetMapping("/video-recommendations")
+    public JsonResponse<List<Video>> getVideoRecommendations(@RequestParam String recommendType) {
+        Long userId = userSupport.getCurrentUserId();
+        List<Video> list = videoService.getVideoRecommendations(recommendType, userId);
+        return new JsonResponse<>(list);
+    }
     
 
 
